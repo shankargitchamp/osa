@@ -83,26 +83,22 @@ init_db()
 # ============ CONFIG MANAGEMENT ============
 def load_config():
     default_config = {
-        "detection_threshold": 0.7,
-        "alert_cooldown_minutes": 5,
-        "email_enabled": False,
-        "slack_enabled": False,
-        "email_recipients": [],
-        "slack_webhook_url": "",
-        "slack_bot_token": "",
-        "slack_channel": "",
-        "attack_patterns": {
+        "detection_threshold": float(os.environ.get("DETECTION_THRESHOLD", 0.7)),
+        "alert_cooldown_minutes": int(os.environ.get("ALERT_COOLDOWN_MINUTES", 5)),
+        "email_enabled": os.environ.get("EMAIL_ENABLED", "False").lower() == "true",
+        "slack_enabled": os.environ.get("SLACK_ENABLED", "False").lower() == "true",
+        "email_recipients": os.environ.get("EMAIL_RECIPIENTS", "").split(",") if os.environ.get("EMAIL_RECIPIENTS") else [],
+        "slack_webhook_url": os.environ.get("SLACK_WEBHOOK_URL", ""),
+        "slack_bot_token": os.environ.get("SLACK_BOT_TOKEN", ""),
+        "slack_channel": os.environ.get("SLACK_CHANNEL", ""),
+        "attack_patterns": json.loads(os.environ.get("ATTACK_PATTERNS", json.dumps({
             "ransomware": {"enabled": True, "churn_threshold": 100},
             "fork_bomb": {"enabled": True, "spawn_threshold": 50},
             "crypto_miner": {"enabled": True, "cpu_threshold": 80},
             "privilege_escalation": {"enabled": True},
             "reverse_shell": {"enabled": True}
-        }
+        })))
     }
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as f:
-            return {**default_config, **json.load(f)}
-    return default_config
 
 def save_config(config):
     with open(CONFIG_FILE, 'w') as f:
@@ -219,7 +215,7 @@ def get_stats():
             "total_anomalies": total_anomalies,
             "total_events": total_events,
             "today_anomalies": today_anomalies,
-            "ai_analysis": latest.get('ai_analysis','')
+            "ai_analysis": latest['ai_analysis','']
         })
     else:
         return jsonify({"status": "No data yet"})
