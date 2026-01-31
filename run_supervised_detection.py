@@ -57,12 +57,12 @@ def follow(file_path):
 
 def main():
     init_db() # Initialize Database
-    if not os.path.exists("xgboost_model.pkl"):
+    if not os.path.exists("ensemble_model.pkl"):
         print("Error: Model not found. Train the model first using train_supervised.py")
         sys.exit(1)
         
     print("Loading Model...")
-    with open("xgboost_model.pkl", "rb") as f:
+    with open("ensemble_model.pkl", "rb") as f:
         model = pickle.load(f)
         
     extractor = AuditFeatureExtractor()
