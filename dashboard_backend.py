@@ -9,7 +9,7 @@ import asyncio
 import sqlite3
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
@@ -116,7 +116,7 @@ def create_token(user_id, username, role):
         'user_id': user_id,
         'username': username,
         'role': role,
-        'exp': datetime.utcnow() + timedelta(hours=24)
+        'exp': int((datetime.now(timezone.utc) + timedelta(hours=24)).timestamp())
     }
     return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
 
@@ -219,7 +219,7 @@ def get_stats():
             "total_anomalies": total_anomalies,
             "total_events": total_events,
             "today_anomalies": today_anomalies,
-            "ai_analysis": latest['ai_analysis']
+            "ai_analysis": latest.get('ai_analysis','')
         })
     else:
         return jsonify({"status": "No data yet"})
