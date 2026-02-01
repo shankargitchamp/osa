@@ -70,19 +70,22 @@ export default function Dashboard() {
   const threatPercent = (stats?.probability || 0) * 100;
 
   return (
-    <div className="space-y-8 fade-in" data-testid="dashboard-page">
+    <div className="space-y-6 fade-in" data-testid="dashboard-page">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="page-title">Threat Monitor</h1>
-          <p className="text-gray-500 text-sm mt-1">Real-time system integrity analysis</p>
+          <h1 className="font-mono font-bold text-2xl tracking-tight">THREAT MONITOR</h1>
+          <p className="text-gray-500 text-sm">Real-time system integrity analysis</p>
         </div>
         
         <div className="flex items-center gap-3">
           <div className={`
-            status-badge ${isCritical ? 'status-badge-critical pulse-critical' : 'status-badge-safe'}
+            flex items-center gap-2 px-4 py-2 rounded font-mono text-sm
+            ${isCritical 
+              ? 'bg-red-500/20 text-red-400 border border-red-500/30 pulse-critical' 
+              : 'bg-green-500/20 text-green-400 border border-green-500/30'}
           `} data-testid="status-badge">
-            <div className={`w-2 h-2 rounded-full ${isCritical ? 'bg-red-400' : 'bg-green-400'} pulse-dot`} />
+            <div className={`w-2 h-2 rounded-full ${isCritical ? 'bg-red-500' : 'bg-green-500'} pulse-dot`} />
             {isCritical ? 'THREAT DETECTED' : 'SYSTEM SECURE'}
           </div>
           
@@ -106,179 +109,157 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Container - Unified KPI Section */}
-      <div className="stats-container">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard 
-            icon={AlertTriangle}
-            label="Threat Level"
-            value={`${threatPercent.toFixed(1)}`}
-            suffix="%"
-            color={isCritical ? 'critical' : 'safe'}
-            testId="stat-threat-level"
-          />
-          <StatCard 
-            icon={Cpu}
-            label="Syscall Rate"
-            value={stats?.syscall_rate || 0}
-            suffix="/sec"
-            color="info"
-            testId="stat-syscall-rate"
-          />
-          <StatCard 
-            icon={HardDrive}
-            label="File Churn"
-            value={stats?.churn_rate || 0}
-            suffix="/sec"
-            color={stats?.churn_rate > 100 ? 'warning' : 'info'}
-            testId="stat-file-churn"
-          />
-          <StatCard 
-            icon={Database}
-            label="Events Analyzed"
-            value={stats?.total_events || 0}
-            suffix=""
-            color="info"
-            testId="stat-total-events"
-          />
-        </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard 
+          icon={AlertTriangle}
+          label="Threat Level"
+          value={`${threatPercent.toFixed(1)}%`}
+          color={isCritical ? 'critical' : 'safe'}
+          testId="stat-threat-level"
+        />
+        <StatCard 
+          icon={Cpu}
+          label="Syscall Rate"
+          value={stats?.syscall_rate || 0}
+          suffix="/sec"
+          color="info"
+          testId="stat-syscall-rate"
+        />
+        <StatCard 
+          icon={HardDrive}
+          label="File Churn"
+          value={stats?.churn_rate || 0}
+          suffix="/sec"
+          color={stats?.churn_rate > 100 ? 'warning' : 'info'}
+          testId="stat-file-churn"
+        />
+        <StatCard 
+          icon={Database}
+          label="Events Analyzed"
+          value={stats?.total_events || 0}
+          color="info"
+          testId="stat-total-events"
+        />
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Main Chart - Threat Level Over Time */}
-        <div className="lg:col-span-2 glass-card p-5">
-          <h2 className="section-header mb-5">
-            Threat Probability Timeline
+        <div className="lg:col-span-2 glass-card p-4">
+          <h2 className="font-mono font-semibold text-sm text-gray-400 mb-4">
+            THREAT PROBABILITY TIMELINE
           </h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={history.slice(-50)}>
                 <defs>
                   <linearGradient id="probGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#FF3B30" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#FF3B30" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis 
                   dataKey="timestamp" 
                   tick={false}
-                  stroke="rgba(255,255,255,0.08)"
-                  strokeWidth={1}
+                  stroke="rgba(255,255,255,0.1)"
                 />
                 <YAxis 
                   domain={[0, 1]}
-                  stroke="rgba(255,255,255,0.08)"
-                  strokeWidth={1}
+                  stroke="rgba(255,255,255,0.1)"
                   tickFormatter={(v) => `${(v * 100).toFixed(0)}%`}
-                  tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'IBM Plex Mono' }}
-                  width={45}
+                  tick={{ fill: '#71717A', fontSize: 10 }}
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1c1c22', 
+                    backgroundColor: '#1A1A1A', 
                     border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px'
+                    borderRadius: '4px'
                   }}
-                  labelStyle={{ color: '#a1a1aa', fontSize: '12px' }}
+                  labelStyle={{ color: '#fff' }}
                   formatter={(value) => [`${(value * 100).toFixed(2)}%`, 'Probability']}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="probability" 
-                  stroke="#ef4444" 
+                  stroke="#FF3B30" 
                   fill="url(#probGradient)" 
-                  strokeWidth={2.5}
+                  strokeWidth={2}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          {history.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-gray-500 text-sm">No data available</p>
-            </div>
-          )}
         </div>
 
         {/* Threat Gauge */}
-        <div className="glass-card p-5 flex flex-col items-center justify-center">
-          <h2 className="section-header mb-4">
-            Current Threat Level
+        <div className="glass-card p-4 flex flex-col items-center justify-center">
+          <h2 className="font-mono font-semibold text-sm text-gray-400 mb-4">
+            CURRENT THREAT LEVEL
           </h2>
           <ThreatGauge value={threatPercent} isCritical={isCritical} />
-          <p className="mt-3 text-sm text-gray-500">
+          <p className="mt-4 text-sm text-gray-500">
             {stats?.timestamp?.split(' ')[1] || '--:--:--'}
           </p>
-          {/* Status indicator connected to gauge */}
-          <div className={`mt-4 px-4 py-2 rounded-lg text-xs font-semibold tracking-wide
-            ${isCritical 
-              ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
-              : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}
-          >
-            {isCritical ? 'Immediate Action Required' : 'All Systems Normal'}
-          </div>
         </div>
       </div>
 
       {/* System Activity Chart */}
-      <div className="glass-card p-5">
-        <h2 className="section-header mb-5">
-          System Activity Metrics
+      <div className="glass-card p-4">
+        <h2 className="font-mono font-semibold text-sm text-gray-400 mb-4">
+          SYSTEM ACTIVITY METRICS
         </h2>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={history.slice(-50)}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="timestamp" tick={false} stroke="rgba(255,255,255,0.08)" strokeWidth={1} />
-              <YAxis stroke="rgba(255,255,255,0.08)" strokeWidth={1} tick={{ fill: '#71717a', fontSize: 11, fontFamily: 'IBM Plex Mono' }} width={45} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="timestamp" tick={false} stroke="rgba(255,255,255,0.1)" />
+              <YAxis stroke="rgba(255,255,255,0.1)" tick={{ fill: '#71717A', fontSize: 10 }} />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#1c1c22', 
+                  backgroundColor: '#1A1A1A', 
                   border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '8px',
-                  padding: '10px 14px'
+                  borderRadius: '4px'
                 }}
               />
               <Line 
                 type="monotone" 
                 dataKey="syscall_rate" 
-                stroke="#3b82f6" 
+                stroke="#007AFF" 
                 dot={false} 
-                strokeWidth={2.5}
+                strokeWidth={2}
                 name="Syscalls/sec"
               />
               <Line 
                 type="monotone" 
                 dataKey="churn_rate" 
-                stroke="#f59e0b" 
+                stroke="#FF9500" 
                 dot={false} 
-                strokeWidth={2.5}
+                strokeWidth={2}
                 name="File Churn"
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex justify-center gap-8 mt-4 pt-3 border-t border-white/5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-3 h-1 rounded-full bg-blue-500" />
-            <span className="text-xs text-gray-400 font-medium">Syscalls/sec</span>
+        <div className="flex justify-center gap-6 mt-2">
+          <div className="flex items-center gap-2 text-xs">
+            <div className="w-3 h-0.5 bg-blue-500" />
+            <span className="text-gray-500">Syscalls/sec</span>
           </div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-3 h-1 rounded-full bg-amber-500" />
-            <span className="text-xs text-gray-400 font-medium">File Churn</span>
+          <div className="flex items-center gap-2 text-xs">
+            <div className="w-3 h-0.5 bg-orange-500" />
+            <span className="text-gray-500">File Churn</span>
           </div>
         </div>
       </div>
 
       {/* Event Log */}
-      <div className="glass-card p-5">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="section-header">
-            Live Event Feed
+      <div className="glass-card p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-mono font-semibold text-sm text-gray-400">
+            LIVE EVENT FEED
           </h2>
-          <span className="text-xs text-gray-500 font-medium">Last 20 events</span>
+          <span className="text-xs text-gray-500">Last 20 events</span>
         </div>
         
         <div className="overflow-x-auto">
@@ -304,20 +285,20 @@ export default function Dashboard() {
                       {event.status}
                     </span>
                   </td>
-                  <td className="font-mono text-sm">
+                  <td className="font-mono">
                     {(event.probability * 100).toFixed(2)}%
                   </td>
                   <td className="font-mono text-blue-400">
                     {event.syscall_rate}
                   </td>
-                  <td className="font-mono text-amber-400">
+                  <td className="font-mono text-orange-400">
                     {event.churn_rate}
                   </td>
                   <td>
                     <button
                       data-testid={`analyze-btn-${i}`}
                       onClick={() => handleAnalyze(event)}
-                      className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                      className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
                     >
                       <Brain size={14} />
                       Analyze
@@ -341,102 +322,68 @@ export default function Dashboard() {
   );
 }
 
-// Stat Card Component - Improved
+// Stat Card Component
 function StatCard({ icon: Icon, label, value, suffix = '', color = 'info', testId }) {
   const colorClasses = {
     critical: 'text-red-400',
-    warning: 'text-amber-400',
+    warning: 'text-yellow-400',
     safe: 'text-green-400',
     info: 'text-blue-400'
   };
-  
-  const bgClasses = {
-    critical: 'bg-red-500/10',
-    warning: 'bg-amber-500/10',
-    safe: 'bg-green-500/10',
-    info: 'bg-blue-500/10'
-  };
 
   return (
-    <div className="metric-card" data-testid={testId}>
-      <div className={`p-2.5 rounded-lg ${bgClasses[color]}`}>
-        <Icon size={20} className={colorClasses[color]} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="kpi-label mb-1">{label}</p>
-        <div className="flex items-baseline gap-0.5">
-          <span className={`kpi-value ${colorClasses[color]}`}>
-            {value}
-          </span>
-          {suffix && (
-            <span className={`text-sm font-medium ${colorClasses[color]} opacity-70`}>
-              {suffix}
-            </span>
-          )}
+    <div className="glass-card p-4" data-testid={testId}>
+      <div className="flex items-center gap-3">
+        <div className={`p-2 rounded bg-white/5 ${colorClasses[color]}`}>
+          <Icon size={18} />
+        </div>
+        <div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">{label}</p>
+          <p className={`stat-value text-xl ${colorClasses[color]}`}>
+            {value}{suffix}
+          </p>
         </div>
       </div>
     </div>
   );
 }
 
-// Threat Gauge Component - Fixed centering
+// Threat Gauge Component
 function ThreatGauge({ value, isCritical }) {
-  const radius = 52;
-  const strokeWidth = 10;
-  const circumference = 2 * Math.PI * radius;
+  const circumference = 2 * Math.PI * 45;
   const offset = circumference - (value / 100) * circumference;
-  const center = 70;
   
   return (
-    <div className="relative w-[140px] h-[140px]">
-      <svg 
-        className="w-full h-full" 
-        viewBox="0 0 140 140"
-        style={{ transform: 'rotate(-90deg)' }}
-      >
+    <div className="relative w-40 h-40">
+      <svg className="w-full h-full transform -rotate-90">
         {/* Background circle */}
         <circle
-          cx={center}
-          cy={center}
-          r={radius}
+          cx="80"
+          cy="80"
+          r="45"
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
-          strokeWidth={strokeWidth}
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="10"
         />
         {/* Progress circle */}
         <circle
-          cx={center}
-          cy={center}
-          r={radius}
+          cx="80"
+          cy="80"
+          r="45"
           fill="none"
-          stroke={isCritical ? '#ef4444' : '#22c55e'}
-          strokeWidth={strokeWidth}
+          stroke={isCritical ? '#FF3B30' : '#34C759'}
+          strokeWidth="10"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className="transition-all duration-700 ease-out"
+          className="transition-all duration-500"
         />
       </svg>
-      {/* Centered text - using absolute positioning for perfect optical centering */}
-      <div 
-        className="absolute inset-0 flex flex-col items-center justify-center"
-        style={{ transform: 'translateY(-2px)' }}
-      >
-        <div className="flex items-baseline">
-          <span 
-            className={`gauge-value ${isCritical ? 'text-red-400' : 'text-green-400'}`}
-          >
-            {value.toFixed(1)}
-          </span>
-          <span 
-            className={`gauge-value-sm ml-0.5 ${isCritical ? 'text-red-400' : 'text-green-400'}`}
-          >
-            %
-          </span>
-        </div>
-        <span className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-medium">
-          Threat
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className={`font-mono font-bold text-3xl ${isCritical ? 'text-red-400' : 'text-green-400'}`}>
+          {value.toFixed(1)}%
         </span>
+        <span className="text-xs text-gray-500 uppercase">Threat</span>
       </div>
     </div>
   );

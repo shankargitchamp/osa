@@ -24,7 +24,7 @@ export function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] flex">
+    <div className="min-h-screen bg-[#050505] flex">
       {/* Mobile Menu Button */}
       <button 
         data-testid="mobile-menu-btn"
@@ -37,25 +37,25 @@ export function Layout() {
       {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-40
-        w-64 bg-[#111114] border-r border-white/6
+        w-64 glass-card border-r border-white/10
         transform transition-transform duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         {/* Logo */}
-        <div className="p-5 border-b border-white/6">
+        <div className="p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-500/12 rounded-lg">
-              <Shield className="w-5 h-5 text-blue-400" />
+            <div className="p-2 bg-blue-600/20 rounded">
+              <Shield className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <h1 className="font-semibold text-base tracking-tight text-white">Sentinel</h1>
-              <p className="text-[11px] text-gray-500 font-medium tracking-wide">OVERWATCH v2.0</p>
+              <h1 className="font-mono font-bold text-lg tracking-tight">SENTINEL</h1>
+              <p className="text-xs text-gray-500">OVERWATCH v2.0</p>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="p-3 space-y-1">
+        <nav className="p-4 space-y-1">
           {navItems.map(({ to, icon: Icon, label, end }) => (
             <NavLink
               key={to}
@@ -68,22 +68,22 @@ export function Layout() {
               onClick={() => setSidebarOpen(false)}
             >
               <Icon size={18} />
-              <span className="font-medium">{label}</span>
+              <span>{label}</span>
             </NavLink>
           ))}
         </nav>
 
         {/* User Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/6">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-sm text-gray-200">{user?.username}</p>
+              <p className="font-medium text-sm">{user?.username}</p>
               <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
             </div>
             <button 
               data-testid="logout-btn"
               onClick={handleLogout}
-              className="p-2 hover:bg-white/8 rounded-lg transition-colors text-gray-400 hover:text-white"
+              className="p-2 hover:bg-white/10 rounded transition-colors text-gray-400 hover:text-white"
             >
               <LogOut size={18} />
             </button>
@@ -94,13 +94,13 @@ export function Layout() {
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main Content */}
-      <main className="flex-1 p-5 lg:p-8 overflow-auto">
+      <main className="flex-1 p-4 lg:p-6 overflow-auto">
         <Outlet />
       </main>
     </div>
