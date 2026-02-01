@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --bg-primary: #050505;
@@ -233,7 +231,19 @@ body {
 }
 
 .modal-content {
-  @apply glass-card p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-auto;
+  padding: 1.5rem;
+  max-width: 42rem;
+  width: 100%;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  position: relative;
 }
 
 /* Navigation */

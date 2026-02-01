@@ -7,7 +7,9 @@ from feature_extractor import AuditFeatureExtractor
 import sqlite3
 
 LOG_FILE = "/var/log/audit/audit.log"
-DB_FILE = "events.db"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_FILE = os.path.join(SCRIPT_DIR, "events.db")
+# DB_FILE = "events.db"
 
 def init_db():
     conn = sqlite3.connect(DB_FILE)
