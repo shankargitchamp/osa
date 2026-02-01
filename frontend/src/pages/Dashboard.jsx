@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { 
   Shield, AlertTriangle, Activity, Database, Cpu, HardDrive,
-  TrendingUp, Clock, Zap, Brain, Send, Download, GitBranch
+  TrendingUp, Clock, Zap, Brain, Send, Download, GitBranch, Loader2
 } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showProcessTree, setShowProcessTree] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [exportError, setExportError] = useState('');
 
   const fetchData = useCallback(async () => {
     try {
@@ -95,14 +97,54 @@ export default function Dashboard() {
             Process Tree
           </button>
           
-          <a 
-            href={`${API_BASE}/export/csv`}
-            data-testid="export-csv-btn"
-            className="btn-ghost flex items-center gap-2"
-          >
-            <Download size={16} />
-            Export
-          </a>
+          <div className="relative group">
+            <button 
+              onClick={async () => {
+                setExportLoading(true);
+                setExportError('');
+                try {
+                  const res = await fetch(`${API_BASE}/export/csv`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                  });
+                  if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `events-export-${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                  } else {
+                    setExportError('Export not available');
+                    setTimeout(() => setExportError(''), 3000);
+                  }
+                } catch (err) {
+                  setExportError('Export not available');
+                  setTimeout(() => setExportError(''), 3000);
+                } finally {
+                  setExportLoading(false);
+                }
+              }}
+              disabled={exportLoading}
+              data-testid="export-csv-btn"
+              className={`btn-ghost flex items-center gap-2 ${exportLoading ? 'opacity-70 cursor-wait' : ''}`}
+              title="Export events to CSV"
+            >
+              {exportLoading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Download size={16} />
+              )}
+              {exportLoading ? 'Exporting...' : 'Export'}
+            </button>
+            {exportError && (
+              <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-xs whitespace-nowrap z-10">
+                {exportError}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { 
   BarChart3, TrendingUp, TrendingDown, Calendar, Download,
-  AlertTriangle, Shield, Clock
+  AlertTriangle, Shield, Clock, Loader2
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -17,6 +17,8 @@ export default function Analytics() {
   const [period, setPeriod] = useState('week');
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [exportError, setExportError] = useState('');
 
   useEffect(() => {
     fetchAnalytics();
@@ -39,8 +41,33 @@ export default function Analytics() {
     }
   };
 
-  const exportReport = () => {
-    window.open(`${API_BASE}/export/pdf`, '_blank');
+  const exportReport = async () => {
+    setExportLoading(true);
+    setExportError('');
+    try {
+      const res = await fetch(`${API_BASE}/export/pdf`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `threat-report-${period}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      } else {
+        setExportError('PDF export not available');
+        setTimeout(() => setExportError(''), 3000);
+      }
+    } catch (err) {
+      setExportError('PDF export not available');
+      setTimeout(() => setExportError(''), 3000);
+    } finally {
+      setExportLoading(false);
+    }
   };
 
   const hourlyData = analytics?.hourly_distribution?.map(h => ({
@@ -88,14 +115,27 @@ export default function Analytics() {
             ))}
           </div>
           
-          <button 
-            onClick={exportReport}
-            className="btn-ghost flex items-center gap-2"
-            data-testid="export-pdf-btn"
-          >
-            <Download size={16} />
-            PDF Report
-          </button>
+          <div className="relative group">
+            <button 
+              onClick={exportReport}
+              disabled={exportLoading}
+              className={`btn-ghost flex items-center gap-2 ${exportLoading ? 'opacity-70 cursor-wait' : ''}`}
+              data-testid="export-pdf-btn"
+              title="Generate PDF report"
+            >
+              {exportLoading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Download size={16} />
+              )}
+              {exportLoading ? 'Generating...' : 'PDF Report'}
+            </button>
+            {exportError && (
+              <div className="absolute top-full right-0 mt-2 px-3 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-xs whitespace-nowrap z-10">
+                {exportError}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

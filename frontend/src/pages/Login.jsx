@@ -63,13 +63,15 @@ export default function Login() {
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <User className="w-4 h-4 text-gray-500" />
+              </div>
               <input
                 type="text"
                 data-testid="username-input"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="input-dark pl-11"
+                className="input-dark input-with-icon"
                 placeholder="Enter username"
                 required
               />
@@ -79,13 +81,15 @@ export default function Login() {
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <Lock className="w-4 h-4 text-gray-500" />
+              </div>
               <input
                 type="password"
                 data-testid="password-input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input-dark pl-11"
+                className="input-dark input-with-icon"
                 placeholder="Enter password"
                 required
               />
