@@ -324,56 +324,86 @@ async def analyze_threat(request: AnalyzeRequest, current_user: dict = Depends(g
     """AI-powered threat analysis using Gemini 3 Flash"""
     event_data = request.event
     
-    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
-        raise HTTPException(status_code=500, detail='AI service not configured')
+        raise HTTPException(status_code=500, detail='GEMINI API key not configured (set GEMINI_API_KEY)')
     
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"threat-analysis-{int(time.time())}",
-            system_message="""You are a cybersecurity threat analyst AI. Analyze system events and provide:
-1. Threat Classification (ransomware, fork bomb, crypto miner, privilege escalation, reverse shell, or other)
-2. Severity Assessment (Critical, High, Medium, Low)
-3. Brief explanation of why this pattern is suspicious
-4. Recommended actions
-Keep responses concise and actionable. Format as JSON."""
-        ).with_model("gemini", "gemini-3-flash-preview")
-        
-        prompt = f"""Analyze this system event for potential security threats:
-- Status: {event_data.get('status', 'Unknown')}
-- Threat Probability: {event_data.get('probability', 0):.2%}
-- Syscall Rate: {event_data.get('syscall_rate', 0)}/sec
-- File Churn Rate: {event_data.get('churn_rate', 0)}/sec
-- Timestamp: {event_data.get('timestamp', 'Unknown')}
-
-Provide a threat analysis in JSON format with keys: classification, severity, explanation, recommendations"""
-
-        user_message = UserMessage(text=prompt)
-        
-        response = await chat.send_message(user_message)
-        
-        # Try to parse as JSON
+        # Prefer the official Google Generative AI SDK for Gemini if available
         try:
-            # Clean response if it has markdown code blocks
+            import google.generativeai as genai
+            genai.configure(api_key=api_key)
+            model_name = os.environ.get('GEMINI_MODEL', 'gemini-3-flash-preview')
+
+            system_message = """You are a cybersecurity threat analyst AI. Analyze system events and provide:\n1. Threat Classification (ransomware, fork bomb, crypto miner, privilege escalation, reverse shell, or other)\n2. Severity Assessment (Critical, High, Medium, Low)\n3. Brief explanation of why this pattern is suspicious\n4. Recommended actions\nKeep responses concise and actionable. Format as JSON."""
+
+            prompt = f"""Analyze this system event for potential security threats:\n- Status: {event_data.get('status', 'Unknown')}\n- Threat Probability: {event_data.get('probability', 0):.2%}\n- Syscall Rate: {event_data.get('syscall_rate', 0)}/sec\n- File Churn Rate: {event_data.get('churn_rate', 0)}/sec\n- Timestamp: {event_data.get('timestamp', 'Unknown')}\n\nProvide a threat analysis in JSON format with keys: classification, severity, explanation, recommendations"""
+
+            # Create chat completion (SDK surface varies by version; attempt common patterns)
+            try:
+                resp = genai.chat.create(
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": system_message},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.0,
+                )
+
+                # Extract text from common response shapes
+                response_text = None
+                if hasattr(resp, 'candidates') and len(resp.candidates) > 0:
+                    candidate = resp.candidates[0]
+                    # candidate may be a dict-like or object
+                    if isinstance(candidate, dict):
+                        # try nested keys
+                        response_text = candidate.get('content') or candidate.get('message') or str(candidate)
+                    else:
+                        response_text = getattr(candidate, 'content', None) or str(candidate)
+                elif hasattr(resp, 'last'):
+                    response_text = getattr(resp, 'last')
+                else:
+                    response_text = str(resp)
+
+            except Exception as e:
+                # If the SDK surface is different, try the older `chat.completions.create` path
+                resp = genai.chat.completions.create(
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": system_message},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.0,
+                )
+                try:
+                    response_text = resp.candidates[0].content[0].text
+                except Exception:
+                    response_text = str(resp)
+
+            # Normalize to string
+            response = (response_text or '').strip()
+
+        except ImportError:
+            raise RuntimeError("google.generativeai SDK not installed. Install with: pip install google-generative-ai")
+
+        # Try to parse JSON from the model response
+        try:
             clean_response = response.strip()
             if clean_response.startswith('```'):
                 clean_response = clean_response.split('```')[1]
                 if clean_response.startswith('json'):
                     clean_response = clean_response[4:]
             analysis = json.loads(clean_response)
-        except:
+        except Exception:
             analysis = {
                 "classification": "Unknown",
                 "severity": "Medium",
                 "explanation": response,
                 "recommendations": ["Review system logs", "Monitor for recurring patterns"]
             }
-        
+
         return {'analysis': analysis}
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'AI analysis failed: {str(e)}')
 
