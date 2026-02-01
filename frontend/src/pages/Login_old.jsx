@@ -27,7 +27,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -40,36 +40,36 @@ export default function Login() {
       </div>
 
       {/* Login Card */}
-      <div className="glass-card p-10 w-full max-w-md relative z-10 fade-in" data-testid="login-card">
+      <div className="glass-card p-8 w-full max-w-md relative z-10 fade-in" data-testid="login-card">
         {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="inline-flex p-4 bg-blue-600/15 rounded-xl mb-5">
+        <div className="text-center mb-8">
+          <div className="inline-flex p-4 bg-blue-600/20 rounded-lg mb-4">
             <Shield className="w-12 h-12 text-blue-400" />
           </div>
-          <h1 className="page-title text-center">Sentinel Overwatch</h1>
-          <p className="page-subtitle text-center">Security Monitoring System</p>
+          <h1 className="font-mono font-bold text-2xl tracking-tight">SENTINEL OVERWATCH</h1>
+          <p className="text-gray-500 text-sm mt-2">Security Monitoring System</p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 text-red-400 text-sm">
-            <AlertTriangle size={18} />
-            <span className="font-medium">{error}</span>
+          <div className="mb-6 p-3 bg-red-500/10 border border-red-500/30 rounded flex items-center gap-2 text-red-400 text-sm">
+            <AlertTriangle size={16} />
+            {error}
           </div>
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Username</label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input
                 type="text"
                 data-testid="username-input"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="input-dark pl-11"
+                className="input-dark pl-10"
                 placeholder="Enter username"
                 required
               />
@@ -77,15 +77,15 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+            <label className="block text-sm font-medium text-gray-400 mb-2">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input
                 type="password"
                 data-testid="password-input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input-dark pl-11"
+                className="input-dark pl-10"
                 placeholder="Enter password"
                 required
               />
@@ -96,7 +96,7 @@ export default function Login() {
             type="submit"
             data-testid="login-submit-btn"
             disabled={loading}
-            className="w-full btn-primary py-3 flex items-center justify-center gap-2 disabled:opacity-50 mt-6"
+            className="w-full btn-primary py-3 flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? (
               <div className="spinner" />
@@ -110,9 +110,9 @@ export default function Login() {
         </form>
 
         {/* Demo Credentials */}
-        <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-          <p className="text-sm text-blue-400 text-center">
-            Demo: <span className="font-mono font-medium">admin</span> / <span className="font-mono font-medium">sentinel123</span>
+        <div className="mt-6 p-3 bg-blue-500/10 border border-blue-500/20 rounded">
+          <p className="text-xs text-blue-400 text-center">
+            Demo: <span className="font-mono">admin</span> / <span className="font-mono">sentinel123</span>
           </p>
         </div>
       </div>

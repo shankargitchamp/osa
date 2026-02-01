@@ -64,16 +64,16 @@ export default function Alerts() {
   });
 
   return (
-    <div className="space-y-6 fade-in" data-testid="alerts-page">
+    <div className="space-y-8 fade-in" data-testid="alerts-page">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="font-mono font-bold text-2xl tracking-tight">ALERT CENTER</h1>
-          <p className="text-gray-500 text-sm">Manage and monitor security notifications</p>
+          <h1 className="page-title">Alert Center</h1>
+          <p className="page-subtitle">Manage and monitor security notifications</p>
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="flex bg-black/30 rounded overflow-hidden">
+          <div className="flex bg-black/30 rounded-lg overflow-hidden border border-white/5">
             {['all', 'sent', 'failed'].map((f) => (
               <button
                 key={f}
@@ -82,7 +82,7 @@ export default function Alerts() {
                 className={`px-4 py-2 text-sm font-medium transition-colors ${
                   filter === f 
                     ? 'bg-blue-600 text-white' 
-                    : 'text-gray-400 hover:text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -102,42 +102,44 @@ export default function Alerts() {
       </div>
 
       {/* Alert Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={Bell}
-          label="Total Alerts"
-          value={alertHistory.length}
-          color="info"
-          testId="stat-total-alerts"
-        />
-        <StatCard
-          icon={CheckCircle}
-          label="Successfully Sent"
-          value={alertHistory.filter(a => {
-            const s = parseStatus(a.status);
-            return s.email === 'sent' || s.slack === 'sent';
-          }).length}
-          color="safe"
-          testId="stat-sent-alerts"
-        />
-        <StatCard
-          icon={Mail}
-          label="Email Alerts"
-          value={alertHistory.filter(a => parseChannels(a.alert_type).includes('email')).length}
-          color="info"
-          testId="stat-email-alerts"
-        />
-        <StatCard
-          icon={MessageSquare}
-          label="Slack Alerts"
-          value={alertHistory.filter(a => parseChannels(a.alert_type).includes('slack')).length}
-          color="warning"
-          testId="stat-slack-alerts"
-        />
+      <div className="stats-container">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            icon={Bell}
+            label="Total Alerts"
+            value={alertHistory.length}
+            color="info"
+            testId="stat-total-alerts"
+          />
+          <StatCard
+            icon={CheckCircle}
+            label="Successfully Sent"
+            value={alertHistory.filter(a => {
+              const s = parseStatus(a.status);
+              return s.email === 'sent' || s.slack === 'sent';
+            }).length}
+            color="safe"
+            testId="stat-sent-alerts"
+          />
+          <StatCard
+            icon={Mail}
+            label="Email Alerts"
+            value={alertHistory.filter(a => parseChannels(a.alert_type).includes('email')).length}
+            color="info"
+            testId="stat-email-alerts"
+          />
+          <StatCard
+            icon={MessageSquare}
+            label="Slack Alerts"
+            value={alertHistory.filter(a => parseChannels(a.alert_type).includes('slack')).length}
+            color="warning"
+            testId="stat-slack-alerts"
+          />
+        </div>
       </div>
 
       {/* Alert Configuration */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <NotificationCard
           icon={Mail}
           title="Email Notifications"
@@ -155,13 +157,13 @@ export default function Alerts() {
       </div>
 
       {/* Alert History Table */}
-      <div className="glass-card p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-mono font-semibold text-sm text-gray-400 flex items-center gap-2">
+      <div className="glass-card p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="section-header flex items-center gap-2">
             <Clock size={16} />
-            ALERT HISTORY
+            Alert History
           </h2>
-          <span className="text-xs text-gray-500">{filteredAlerts.length} alerts</span>
+          <span className="text-xs text-gray-500 font-medium">{filteredAlerts.length} alerts</span>
         </div>
 
         {loading ? (
@@ -230,23 +232,21 @@ export default function Alerts() {
 function StatCard({ icon: Icon, label, value, color = 'info', testId }) {
   const colorClasses = {
     critical: 'text-red-400 bg-red-500/10',
-    warning: 'text-yellow-400 bg-yellow-500/10',
+    warning: 'text-amber-400 bg-amber-500/10',
     safe: 'text-green-400 bg-green-500/10',
     info: 'text-blue-400 bg-blue-500/10'
   };
 
   return (
-    <div className="glass-card p-4" data-testid={testId}>
-      <div className="flex items-center gap-3">
-        <div className={`p-2 rounded ${colorClasses[color]}`}>
-          <Icon size={18} />
-        </div>
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">{label}</p>
-          <p className={`stat-value text-xl ${colorClasses[color].split(' ')[0]}`}>
-            {value}
-          </p>
-        </div>
+    <div className="metric-card" data-testid={testId}>
+      <div className={`p-2.5 rounded-lg ${colorClasses[color]}`}>
+        <Icon size={20} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="kpi-label">{label}</p>
+        <p className={`kpi-value ${colorClasses[color].split(' ')[0]}`}>
+          {value}
+        </p>
       </div>
     </div>
   );
@@ -254,8 +254,8 @@ function StatCard({ icon: Icon, label, value, color = 'info', testId }) {
 
 function NotificationCard({ icon: Icon, title, description, color, testId }) {
   const gradients = {
-    blue: 'from-blue-600/20 to-blue-800/10',
-    purple: 'from-purple-600/20 to-purple-800/10',
+    blue: 'from-blue-600/15 to-blue-800/5',
+    purple: 'from-purple-600/15 to-purple-800/5',
   };
 
   const iconColors = {
@@ -265,17 +265,17 @@ function NotificationCard({ icon: Icon, title, description, color, testId }) {
 
   return (
     <div 
-      className={`glass-card p-6 bg-gradient-to-br ${gradients[color]} border border-white/5`}
+      className={`content-card bg-gradient-to-br ${gradients[color]}`}
       data-testid={testId}
     >
       <div className="flex items-start gap-4">
-        <div className={`p-3 rounded-lg bg-black/30 ${iconColors[color]}`}>
+        <div className={`p-3 rounded-xl bg-black/30 ${iconColors[color]}`}>
           <Icon size={24} />
         </div>
-        <div>
-          <h3 className="font-mono font-semibold text-lg mb-1">{title}</h3>
-          <p className="text-gray-400 text-sm">{description}</p>
-          <p className="text-xs text-gray-600 mt-2">Configure in Settings → Notifications</p>
+        <div className="flex-1">
+          <h3 className="font-semibold text-lg mb-1.5 text-gray-100">{title}</h3>
+          <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+          <p className="text-xs text-gray-500 mt-3">Configure in Settings → Notifications</p>
         </div>
       </div>
     </div>

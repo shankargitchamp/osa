@@ -99,12 +99,12 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-8 fade-in" data-testid="settings-page">
+    <div className="space-y-6 fade-in" data-testid="settings-page">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="page-title">Configuration</h1>
-          <p className="page-subtitle">System settings and detection thresholds</p>
+          <h1 className="font-mono font-bold text-2xl tracking-tight">CONFIGURATION</h1>
+          <p className="text-gray-500 text-sm">System settings and detection thresholds</p>
         </div>
         
         <button 
@@ -120,47 +120,47 @@ export default function Settings() {
 
       {/* Status Message */}
       {message.text && (
-        <div className={`p-4 rounded-lg flex items-center gap-3 ${
+        <div className={`p-4 rounded flex items-center gap-2 ${
           message.type === 'success' 
             ? 'bg-green-500/10 border border-green-500/30 text-green-400'
             : 'bg-red-500/10 border border-red-500/30 text-red-400'
         }`}>
           {message.type === 'success' ? <Check size={18} /> : <X size={18} />}
-          <span className="font-medium">{message.text}</span>
+          {message.text}
         </div>
       )}
 
       {/* Admin Notice */}
       {user?.role !== 'admin' && (
-        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-center gap-3 text-amber-400">
+        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded flex items-center gap-2 text-yellow-400">
           <Lock size={18} />
-          <span className="font-medium">View only mode - Admin access required to modify settings</span>
+          <span>View only mode - Admin access required to modify settings</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar Tabs */}
-        <div className="space-y-2">
+        <div className="space-y-1">
           {tabs.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
               data-testid={`tab-${id}`}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded text-left transition-all ${
                 activeTab === id
-                  ? 'bg-blue-600/15 text-white border border-blue-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                  ? 'bg-blue-600/20 text-white border border-blue-500/30'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <Icon size={18} />
-              <span className="font-medium">{label}</span>
+              <span>{label}</span>
               <ChevronRight size={16} className="ml-auto opacity-50" />
             </button>
           ))}
         </div>
 
         {/* Content Area */}
-        <div className="lg:col-span-3 panel-card">
+        <div className="lg:col-span-3 glass-card p-6">
           {activeTab === 'detection' && (
             <DetectionSettings config={config} updateConfig={updateConfig} />
           )}
@@ -178,22 +178,22 @@ export default function Settings() {
 
 function DetectionSettings({ config, updateConfig }) {
   return (
-    <div className="space-y-8" data-testid="detection-settings">
+    <div className="space-y-6" data-testid="detection-settings">
       <div>
-        <h2 className="flex items-center gap-2.5 text-lg font-semibold text-gray-100 mb-2">
+        <h2 className="font-mono font-semibold text-lg mb-4 flex items-center gap-2">
           <Shield size={20} className="text-blue-400" />
           Detection Thresholds
         </h2>
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-500 text-sm mb-6">
           Adjust sensitivity and alert thresholds for threat detection
         </p>
       </div>
 
       {/* Detection Threshold Slider */}
-      <div className="space-y-4 p-5 bg-black/20 rounded-xl border border-white/5">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-200">Detection Threshold</label>
-          <span className="font-mono text-blue-400 text-lg font-semibold">
+          <label className="text-sm font-medium">Detection Threshold</label>
+          <span className="font-mono text-blue-400">
             {((config?.detection_threshold || 0.7) * 100).toFixed(0)}%
           </span>
         </div>
@@ -207,20 +207,20 @@ function DetectionSettings({ config, updateConfig }) {
           className="w-full h-2 bg-black/50 rounded-lg appearance-none cursor-pointer accent-blue-500"
           data-testid="detection-threshold-slider"
         />
-        <div className="flex justify-between text-xs text-gray-500 font-medium">
+        <div className="flex justify-between text-xs text-gray-500">
           <span>High Sensitivity</span>
           <span>Low Sensitivity</span>
         </div>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-gray-600 mt-2">
           Lower values increase sensitivity (more alerts). Higher values reduce false positives.
         </p>
       </div>
 
       {/* Alert Cooldown */}
-      <div className="space-y-4 p-5 bg-black/20 rounded-xl border border-white/5">
+      <div className="space-y-3 pt-6 border-t border-white/10">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-gray-200">Alert Cooldown</label>
-          <span className="font-mono text-blue-400 text-lg font-semibold">
+          <label className="text-sm font-medium">Alert Cooldown</label>
+          <span className="font-mono text-blue-400">
             {config?.alert_cooldown_minutes || 5} min
           </span>
         </div>
@@ -234,7 +234,7 @@ function DetectionSettings({ config, updateConfig }) {
           className="w-full h-2 bg-black/50 rounded-lg appearance-none cursor-pointer accent-blue-500"
           data-testid="cooldown-slider"
         />
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-600">
           Minimum time between repeated alerts for the same threat type.
         </p>
       </div>
@@ -254,27 +254,25 @@ function NotificationSettings({ config, updateConfig }) {
   };
 
   return (
-    <div className="space-y-8" data-testid="notification-settings">
+    <div className="space-y-6" data-testid="notification-settings">
       <div>
-        <h2 className="flex items-center gap-2.5 text-lg font-semibold text-gray-100 mb-2">
+        <h2 className="font-mono font-semibold text-lg mb-4 flex items-center gap-2">
           <Bell size={20} className="text-blue-400" />
           Notification Channels
         </h2>
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-500 text-sm mb-6">
           Configure how you receive threat alerts
         </p>
       </div>
 
       {/* Email Settings */}
-      <div className="p-5 bg-black/20 rounded-xl border border-white/5">
-        <div className="flex items-center justify-between mb-5">
+      <div className="p-4 bg-black/30 rounded-lg border border-white/5">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-blue-500/10">
-              <Mail size={20} className="text-blue-400" />
-            </div>
+            <Mail size={20} className="text-blue-400" />
             <div>
-              <h3 className="font-medium text-gray-100">Email Notifications</h3>
-              <p className="text-xs text-gray-500 mt-0.5">Send alerts to email addresses</p>
+              <h3 className="font-medium">Email Notifications</h3>
+              <p className="text-xs text-gray-500">Send alerts to email addresses</p>
             </div>
           </div>
           <ToggleSwitch
@@ -285,18 +283,18 @@ function NotificationSettings({ config, updateConfig }) {
         </div>
 
         {config?.email_enabled && (
-          <div className="space-y-4 pt-5 border-t border-white/8">
-            <label className="text-xs text-gray-400 uppercase font-semibold tracking-wide">Recipients</label>
+          <div className="space-y-3 pt-4 border-t border-white/10">
+            <label className="text-xs text-gray-500 uppercase">Recipients</label>
             <div className="flex flex-wrap gap-2">
               {(config?.email_recipients || []).map((email, i) => (
                 <span 
                   key={i} 
-                  className="px-3 py-1.5 bg-blue-500/15 text-blue-400 rounded-full text-sm flex items-center gap-2 border border-blue-500/20"
+                  className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm flex items-center gap-2"
                 >
                   {email}
                   <button 
                     onClick={() => removeEmailRecipient(email)}
-                    className="hover:text-red-400 transition-colors"
+                    className="hover:text-red-400"
                   >
                     <X size={14} />
                   </button>
@@ -320,15 +318,13 @@ function NotificationSettings({ config, updateConfig }) {
       </div>
 
       {/* Slack Settings */}
-      <div className="p-5 bg-black/20 rounded-xl border border-white/5">
-        <div className="flex items-center justify-between mb-5">
+      <div className="p-4 bg-black/30 rounded-lg border border-white/5">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-purple-500/10">
-              <MessageSquare size={20} className="text-purple-400" />
-            </div>
+            <MessageSquare size={20} className="text-purple-400" />
             <div>
-              <h3 className="font-medium text-gray-100">Slack Notifications</h3>
-              <p className="text-xs text-gray-500 mt-0.5">Send alerts to Slack channels</p>
+              <h3 className="font-medium">Slack Notifications</h3>
+              <p className="text-xs text-gray-500">Send alerts to Slack channels</p>
             </div>
           </div>
           <ToggleSwitch
@@ -339,9 +335,9 @@ function NotificationSettings({ config, updateConfig }) {
         </div>
 
         {config?.slack_enabled && (
-          <div className="space-y-4 pt-5 border-t border-white/8">
+          <div className="space-y-3 pt-4 border-t border-white/10">
             <div>
-              <label className="text-xs text-gray-400 uppercase font-semibold tracking-wide block mb-2">Bot Token</label>
+              <label className="text-xs text-gray-500 uppercase block mb-2">Bot Token</label>
               <input
                 type="password"
                 placeholder="xoxb-..."
@@ -352,7 +348,7 @@ function NotificationSettings({ config, updateConfig }) {
               />
             </div>
             <div>
-              <label className="text-xs text-gray-400 uppercase font-semibold tracking-wide block mb-2">Channel</label>
+              <label className="text-xs text-gray-500 uppercase block mb-2">Channel</label>
               <input
                 type="text"
                 placeholder="#security-alerts"
@@ -381,19 +377,19 @@ function PatternSettings({ config, updatePattern }) {
   const colorMap = {
     red: 'text-red-400 bg-red-500/10',
     orange: 'text-orange-400 bg-orange-500/10',
-    yellow: 'text-amber-400 bg-amber-500/10',
+    yellow: 'text-yellow-400 bg-yellow-500/10',
     purple: 'text-purple-400 bg-purple-500/10',
     blue: 'text-blue-400 bg-blue-500/10',
   };
 
   return (
-    <div className="space-y-8" data-testid="pattern-settings">
+    <div className="space-y-6" data-testid="pattern-settings">
       <div>
-        <h2 className="flex items-center gap-2.5 text-lg font-semibold text-gray-100 mb-2">
-          <AlertTriangle size={20} className="text-amber-400" />
+        <h2 className="font-mono font-semibold text-lg mb-4 flex items-center gap-2">
+          <AlertTriangle size={20} className="text-yellow-400" />
           Attack Pattern Detection
         </h2>
-        <p className="text-gray-400 text-sm">
+        <p className="text-gray-500 text-sm mb-6">
           Enable or disable specific attack pattern detectors
         </p>
       </div>
@@ -402,16 +398,16 @@ function PatternSettings({ config, updatePattern }) {
         {patterns.map(({ key, label, icon: Icon, color, desc }) => (
           <div 
             key={key}
-            className="p-4 bg-black/20 rounded-xl border border-white/5 flex items-center justify-between hover:border-white/10 transition-all"
+            className="p-4 bg-black/30 rounded-lg border border-white/5 flex items-center justify-between"
             data-testid={`pattern-${key}`}
           >
             <div className="flex items-center gap-4">
-              <div className={`p-2.5 rounded-lg ${colorMap[color]}`}>
+              <div className={`p-2 rounded ${colorMap[color]}`}>
                 <Icon size={20} />
               </div>
               <div>
-                <h3 className="font-medium text-gray-100">{label}</h3>
-                <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                <h3 className="font-medium">{label}</h3>
+                <p className="text-xs text-gray-500">{desc}</p>
               </div>
             </div>
             <ToggleSwitch
