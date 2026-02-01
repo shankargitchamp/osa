@@ -1,0 +1,114 @@
+{
+  "identity": {
+    "name": "E1",
+    "role": "Anti-AI Designer",
+    "mission": "Create a tactical, high-density cybersecurity dashboard that feels like a 'God Mode' command center. Avoid generic SaaS aesthetics."
+  },
+  "theme": {
+    "mode": "dark",
+    "aesthetic": "Cyberpunk / Tactical / Glassmorphism",
+    "emotional_tone": "Alert, Secure, Precision, High-Tech",
+    "visual_style": "Obsidian backgrounds, Neon data points, Glass overlays, Scanlines"
+  },
+  "typography": {
+    "headings": {
+      "font_family": "JetBrains Mono, monospace",
+      "usage": "All headers, data values, and KPIs",
+      "weights": ["700", "800"],
+      "tracking": "tracking-tight"
+    },
+    "body": {
+      "font_family": "Inter, sans-serif",
+      "usage": "Long form text, descriptions, labels",
+      "weights": ["400", "500"],
+      "tracking": "tracking-normal"
+    }
+  },
+  "colors": {
+    "background": {
+      "primary": "#050505",
+      "secondary": "#0A0A0A",
+      "card": "rgba(20, 20, 20, 0.6)",
+      "overlay": "rgba(0, 0, 0, 0.8)"
+    },
+    "accents": {
+      "critical": "#FF3B30",
+      "warning": "#FF9500",
+      "success": "#34C759",
+      "info": "#007AFF",
+      "primary_brand": "#007AFF"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#A1A1AA",
+      "muted": "#52525B"
+    },
+    "borders": {
+      "subtle": "rgba(255, 255, 255, 0.1)",
+      "highlight": "rgba(0, 122, 255, 0.5)"
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid (High Density)",
+    "spacing": "Compact (p-4, gap-4) for data density",
+    "container_style": "Glassmorphic cards with 1px subtle borders and backdrop blur",
+    "rules": [
+      "Use grid-cols-12 for main dashboard",
+      "Widgets must stretch to fill height (h-full)",
+      "No jagged bottoms in grid layouts"
+    ]
+  },
+  "components": {
+    "library": "shadcn/ui",
+    "customization": "Heavily customized for dark mode. Remove rounded corners (use rounded-sm or rounded-none for tactical feel). Add glowing borders on active states.",
+    "required_components": [
+      "card",
+      "button",
+      "input",
+      "table",
+      "badge",
+      "dialog",
+      "scroll-area",
+      "tabs",
+      "avatar",
+      "dropdown-menu",
+      "switch",
+      "slider",
+      "progress",
+      "sonner"
+    ]
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-black/40 border border-white/10",
+    "neon_glow": "shadow-[0_0_10px_rgba(0,122,255,0.5)]",
+    "scanlines": "Overlay with repeating-linear-gradient for retro-tech feel (optional)",
+    "motion": "Subtle pulses for live data. Smooth transitions (0.2s ease-out) for hover states."
+  },
+  "media": {
+    "image_urls": {
+      "user_avatar": "https://images.unsplash.com/photo-1678483573236-d8eb3fb024e2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHwxfHxzbWlsaW5nJTIwbWFuJTIwY29ycG9yYXRlJTIwaGVhZHNob3QlMjBncmV5JTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3Njk4NDAxOTN8MA&ixlib=rb-4.1.0&q=85",
+      "map_placeholder": "Use CSS/SVG or a library like react-simple-maps. Do not use a static image."
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALL TAILWIND CSS: The project is missing Tailwind. Run 'npm install -D tailwindcss postcss autoprefixer' and 'npx tailwindcss init -p'. Configure 'tailwind.config.js' to include content paths: ['./index.html', './src/**/*.{js,ts,jsx,tsx}']. Add directives to 'src/index.css'.",
+    "2. INSTALL SHADCN/UI: Run 'npx shadcn@latest init'. Choose 'New York' style, 'Zinc' base color, and 'yes' for CSS variables. Then install required components.",
+    "3. CONFIGURE FONTS: Import 'JetBrains Mono' and 'Inter' from Google Fonts in 'index.css'. Update 'tailwind.config.js' to use them.",
+    "4. IMPLEMENT THEME: Force dark mode in 'index.html' (add class='dark'). Set background to #050505.",
+    "5. BUILD LAYOUT: Create the Dashboard using the Bento Grid strategy. Use 'recharts' for data visualization (already installed).",
+    "6. MOCK DATA: Create a 'mockData.js' file to simulate real-time threats if backend is not ready.",
+    "7. TESTING: Add 'data-testid' to all interactive elements."
+  ],
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts. Use asymmetry.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable, but keep data dense in the dashboard.",
+    "Subtle grain textures and noise overlays separate good from extraordinary.",
+    "Prioritize using pre-existing components from src/components/ui.",
+    "Components MUST use named exports.",
+    "Pages MUST use default exports."
+  ]
+}

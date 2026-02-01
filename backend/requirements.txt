@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-dotenv
+PyJWT
+pydantic
+python-multipart
+reportlab
+slack_sdk
+resend
+google-generative-ai
